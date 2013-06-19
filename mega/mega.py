@@ -4,7 +4,6 @@ from Crypto.Cipher import AES
 from Crypto.PublicKey import RSA
 from Crypto.Util import Counter
 import os
-import sys
 import random
 import binascii
 import requests
