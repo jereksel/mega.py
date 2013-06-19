@@ -4,6 +4,7 @@ from Crypto.Cipher import AES
 from Crypto.PublicKey import RSA
 from Crypto.Util import Counter
 import os
+import sys
 import random
 import binascii
 import requests
@@ -200,6 +201,7 @@ class Mega(object):
 
     ##########################################################################
     # GET
+
     def find(self, filename):
         """
         Return file object from given filename
@@ -259,6 +261,34 @@ class Mega(object):
                                                 decrypted_key)
         else:
             raise ValidationError('File id and key must be present')
+
+    def get_location(self, folder_id, files="false", table="false", table_id=0, root=""):
+        """
+        Return file/folder location in unix style (/folder1/folder2)
+        """
+        if table == "false":
+            table = []
+
+        if files == "false":
+            files = self.get_files()
+        else:
+            files=files
+        for file in files.items():
+            if file[1]['h'] == folder_id:
+                if file[1]['t'] == 2:
+                    table.reverse()
+                    string = ""
+                    for i in range (0,table_id):
+                        string += "/" + table[i]
+                    return string
+
+
+                else:  
+                    table.append(file[1]['a']['n'])
+                    table_id = table_id + 1
+                    return self.get_location(file[1]['p'],files=files, table=table, table_id=table_id)
+
+
 
     def get_user(self):
         user_data = self.api_request({'a': 'ug'})
@@ -504,6 +534,56 @@ class Mega(object):
             raise ValueError('Mismatched mac')
 
         shutil.move(temp_output_file.name, dest_path + file_name)
+
+    def download_folder(self, foldernameorid, download_location, using="name", firstuse="yes"):
+        """
+        Return file object from given filename
+        """
+
+        if firstuse == "yes":
+            files = self.get_files()
+        else:
+            files = firstuse
+        for folder in files.items():
+            if using == "name":
+                if folder[1]['a'] and folder[1]['a']['n'] == foldernameorid and folder[1]['t'] == 1:  #Looking for folder with given name
+                    for folders_2 in files.items():
+
+                        if folders_2[1]['a'] and folders_2[1]['p'] == folder[1]['h'] and folders_2[1]['t'] == 0:
+                                    
+                            file_location = download_location + self.get_location(folders_2[1]['p'], files=firstuse)
+
+                            if not os.path.exists(file_location):
+                                os.makedirs(file_location)
+
+                            self.download(folders_2, file_location)
+
+
+                        if folders_2[1]['a'] and folders_2[1]['p'] == folder[1]['h'] and folders_2[1]['t'] == 1: #Looking for folders in given folder
+
+                            self.download_folder(foldernameorid=folders_2[1]['h'], download_location=download_location, using="id", firstuse=files)
+
+
+            if using == "id":
+                if folder[1]['a'] and folder[1]['h'] == foldernameorid and folder[1]['t'] == 1:       #Looking for folder with given name
+                    for folders_2 in files.items():
+
+                        if folders_2[1]['a'] and folders_2[1]['p'] == folder[1]['h'] and folders_2[1]['t'] == 0:
+
+                            file_location = download_location + self.get_location(folders_2[1]['p'], files=firstuse)
+
+
+                            if not os.path.exists(file_location):
+                                os.makedirs(file_location)
+
+                            self.download(folders_2, file_location)
+
+                        if folders_2[1]['a'] and folders_2[1]['p'] == folder[1]['h'] and folders_2[1]['t'] == 1: #Looking for folders in given folder
+
+                            self.download_folder(foldernameorid=folders_2[1]['h'], download_location=download_location, using="id", firstuse=files)
+                        
+
+
 
     ##########################################################################
     # UPLOAD
