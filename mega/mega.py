@@ -586,7 +586,7 @@ class Mega(object):
 
     ##########################################################################
     # UPLOAD
-    def upload(self, filename, dest=None, dest_filename=None):
+    def upload(self, filename, dest=None, dest_filename=None, callback=None):
         #determine storage node
         if dest is None:
             #if none set, upload to cloud drive node
@@ -640,7 +640,10 @@ class Mega(object):
 
             if self.options.get('verbose') is True:
                 # upload progress
-                print('{0} of {1} uploaded'.format(upload_progress, file_size))
+                if callback:
+                    callback(upload_progress, file_size)
+                else:
+                    print('{0} of {1} uploaded'.format(upload_progress, file_size))
 
         file_mac = str_to_a32(mac_str)
 
