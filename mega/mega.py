@@ -534,15 +534,15 @@ class Mega(object):
 
         shutil.move(temp_output_file.name, dest_path + file_name)
 
-    def download_folder(self, foldernameorid, download_location, using="name", firstuse="yes"):
+    def download_folder(self, foldernameorid, download_location, using="name", files=None):
         """
         Return file object from given filename
         """
 
-        if firstuse == "yes":
-            files = self.get_files()
+        if files:
+            files=files
         else:
-            files = firstuse
+            files = self.get_files()
         for folder in files.items():
             if using == "name":
                 if folder[1]['a'] and folder[1]['a']['n'] == foldernameorid and folder[1]['t'] == 1:  #Looking for folder with given name
@@ -550,7 +550,7 @@ class Mega(object):
 
                         if folders_2[1]['a'] and folders_2[1]['p'] == folder[1]['h'] and folders_2[1]['t'] == 0:
                                     
-                            file_location = download_location + self.get_location(folders_2[1]['p'], files=firstuse)
+                            file_location = download_location + self.get_location(folders_2[1]['p'], files=files)
 
                             if not os.path.exists(file_location):
                                 os.makedirs(file_location)
@@ -560,7 +560,7 @@ class Mega(object):
 
                         if folders_2[1]['a'] and folders_2[1]['p'] == folder[1]['h'] and folders_2[1]['t'] == 1: #Looking for folders in given folder
 
-                            self.download_folder(foldernameorid=folders_2[1]['h'], download_location=download_location, using="id", firstuse=files)
+                            self.download_folder(foldernameorid=folders_2[1]['h'], download_location=download_location, using="id", files=files)
 
 
             if using == "id":
@@ -569,7 +569,7 @@ class Mega(object):
 
                         if folders_2[1]['a'] and folders_2[1]['p'] == folder[1]['h'] and folders_2[1]['t'] == 0:
 
-                            file_location = download_location + self.get_location(folders_2[1]['p'], files=firstuse)
+                            file_location = download_location + self.get_location(folders_2[1]['p'], files=files)
 
 
                             if not os.path.exists(file_location):
@@ -579,7 +579,7 @@ class Mega(object):
 
                         if folders_2[1]['a'] and folders_2[1]['p'] == folder[1]['h'] and folders_2[1]['t'] == 1: #Looking for folders in given folder
 
-                            self.download_folder(foldernameorid=folders_2[1]['h'], download_location=download_location, using="id", firstuse=files)
+                            self.download_folder(foldernameorid=folders_2[1]['h'], download_location=download_location, using="id", files=files)
                         
 
 
