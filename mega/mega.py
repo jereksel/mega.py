@@ -546,6 +546,13 @@ class Mega(object):
         for folder in files.items():
             if using == "name":
                 if folder[1]['a'] and folder[1]['a']['n'] == foldernameorid and folder[1]['t'] == 1:  #Looking for folder with given name
+                
+
+                    file_location = download_location + self.get_location(folder[1]['h'], files=files)
+
+                    if not os.path.exists(file_location):
+                        os.makedirs(file_location)
+
                     for folders_2 in files.items():
 
                         if folders_2[1]['a'] and folders_2[1]['p'] == folder[1]['h'] and folders_2[1]['t'] == 0:
@@ -560,11 +567,23 @@ class Mega(object):
 
                         if folders_2[1]['a'] and folders_2[1]['p'] == folder[1]['h'] and folders_2[1]['t'] == 1: #Looking for folders in given folder
 
+                            file_location = download_location + self.get_location(folders_2[1]['p'], files=files)
+
+
+                            if not os.path.exists(file_location):
+                                os.makedirs(file_location)
+
                             self.download_folder(foldernameorid=folders_2[1]['h'], download_location=download_location, using="id", files=files)
 
 
             if using == "id":
-                if folder[1]['a'] and folder[1]['h'] == foldernameorid and folder[1]['t'] == 1:       #Looking for folder with given name
+                if folder[1]['a'] and folder[1]['h'] == foldernameorid and folder[1]['t'] == 1:       #Looking for folder with given id
+                    
+                    file_location = download_location + self.get_location(folder[1]['h'], files=files)
+
+                    if not os.path.exists(file_location):
+                        os.makedirs(file_location)
+
                     for folders_2 in files.items():
 
                         if folders_2[1]['a'] and folders_2[1]['p'] == folder[1]['h'] and folders_2[1]['t'] == 0:
@@ -575,12 +594,19 @@ class Mega(object):
                             if not os.path.exists(file_location):
                                 os.makedirs(file_location)
 
+
                             self.download(folders_2, file_location)
+
 
                         if folders_2[1]['a'] and folders_2[1]['p'] == folder[1]['h'] and folders_2[1]['t'] == 1: #Looking for folders in given folder
 
+                            file_location = download_location + self.get_location(folders_2[1]['p'], files=files)
+
+
+                            if not os.path.exists(file_location):
+                                os.makedirs(file_location)
+
                             self.download_folder(foldernameorid=folders_2[1]['h'], download_location=download_location, using="id", files=files)
-                        
 
 
 
