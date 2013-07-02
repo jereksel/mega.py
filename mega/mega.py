@@ -432,11 +432,11 @@ class Mega(object):
 
     ##########################################################################
     # DOWNLOAD
-    def download(self, file, dest_path=None, dest_filename=None):
+    def download(self, file, dest_path=None, dest_filename=None, callback=None):
         """
         Download a file by it's file object
         """
-        self.download_file(None, None, file=file[1], dest_path=dest_path, dest_filename=dest_filename, is_public=False)
+        self.download_file(None, None, file=file[1], dest_path=dest_path, dest_filename=dest_filename, is_public=False, callback=callback)
 
     def download_url(self, url, dest_path=None, dest_filename=None):
         """
@@ -447,7 +447,7 @@ class Mega(object):
         file_key = path[1]
         self.download_file(file_id, file_key, dest_path, dest_filename, is_public=True)
 
-    def download_file(self, file_handle, file_key, dest_path=None, dest_filename=None, is_public=False, file=None):
+    def download_file(self, file_handle, file_key, dest_path=None, dest_filename=None, is_public=False, file=None, callback=None):
         if file is None :
             if is_public:
                 file_key = base64_to_a32(file_key)
@@ -521,8 +521,14 @@ class Mega(object):
 
             if self.options.get('verbose') is True:
                 # temp file size
-                file_info = os.stat(temp_output_file.name)
-                print('{0} of {1} downloaded'.format(file_info.st_size, file_size))
+
+                if callback:
+                    file_info = os.stat(temp_output_file.name)
+                    callback(file_info.st_size, file_size)
+                else:
+                    file_info = os.stat(temp_output_file.name)
+                    print('{0} of {1} downloaded'.format(file_info.st_size, file_size))
+
 
         file_mac = str_to_a32(mac_str)
 
