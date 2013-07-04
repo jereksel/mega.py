@@ -1,4 +1,6 @@
 # Mega.py
+[![Build Status](https://travis-ci.org/richardasaurus/mega.py.png?branch=master)](https://travis-ci.org/richardasaurus/mega.py)
+[![Downloads](https://pypip.in/d/mega.py/badge.png)](https://crate.io/packages/mega.py/)
 
 Python library for the Mega.co.nz API, currently supporting:
  - login
@@ -18,7 +20,8 @@ For more detailed information see API_INFO.md
 
 ### Install mega.py package
 ```python
-Run setup from the latest github source
+#Run the following command, or run setup from the latest github source
+sudo pip install mega.py
 ```
 ### Import mega.py
 ```python
